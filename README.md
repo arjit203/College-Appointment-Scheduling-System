@@ -14,7 +14,8 @@ A web application where **students** book appointments with **faculty**, faculty
 - [x] Phase 1 – Project skeleton, Swagger, static frontend
 - [x] Phase 2 – Database with EF Core (7 entities, InitialCreate migration)
 - [x] Phase 3 – Authentication & roles (Identity + JWT, Student/Faculty/Admin)
-- [ ] Phases 4–12 – Features, frontend, polish
+- [x] Phase 4 – Department & Faculty management (Admin CRUD)
+- [ ] Phases 5–12 – Availability, booking, notifications, frontend, polish
 
 ## Run locally
 

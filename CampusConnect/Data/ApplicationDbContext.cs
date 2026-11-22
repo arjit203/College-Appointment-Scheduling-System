@@ -38,6 +38,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         // MUST be called first: it configures all the Identity tables.
         base.OnModelCreating(modelBuilder);
 
+        // ----- Department names must be unique -----
+        // The controller checks this too, but the database index is the final
+        // guarantee (e.g. if two admins click "Save" at the same moment).
+        modelBuilder.Entity<Department>()
+            .HasIndex(department => department.Name)
+            .IsUnique();
+
         // ----- Department 1 -> many FacultyProfiles -----
         // Restrict = a department cannot be deleted while faculty belong to it.
         modelBuilder.Entity<FacultyProfile>()
