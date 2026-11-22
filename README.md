@@ -17,7 +17,8 @@ A web application where **students** book appointments with **faculty**, faculty
 - [x] Phase 4 – Department & Faculty management (Admin CRUD)
 - [x] Phase 5 – Faculty availability slots (local college time, overlap & ownership checks)
 - [x] Phase 6 – Appointment booking, status management and cancellation (transaction-safe, no double booking)
-- [ ] Phases 7–12 – Notifications, frontend, dashboard, polish
+- [x] Phase 7 – Admin dashboard statistics APIs
+- [ ] Next – Notifications, frontend, polish
 
 ## Run locally
 
