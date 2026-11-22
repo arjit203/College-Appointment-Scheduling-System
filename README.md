@@ -13,7 +13,7 @@ A web application where **students** book appointments with **faculty**, faculty
 ## Project status
 - [x] Phase 1 – Project skeleton, Swagger, static frontend
 - [x] Phase 2 – Database with EF Core (7 entities, InitialCreate migration)
-- [ ] Phase 3 – Authentication & roles
+- [x] Phase 3 – Authentication & roles (Identity + JWT, Student/Faculty/Admin)
 - [ ] Phases 4–12 – Features, frontend, polish
 
 ## Run locally
@@ -21,6 +21,17 @@ A web application where **students** book appointments with **faculty**, faculty
 Prerequisites: .NET SDK 11, SQL Server (2022/2025, Developer or Express).
 
 The connection string in `CampusConnect/appsettings.json` uses `Server=localhost` (default SQL Server instance, Windows Authentication). Change it if your instance is named, e.g. `Server=localhost\\SQLEXPRESS`.
+
+Secrets are kept in .NET User Secrets (never in Git). Set them once:
+
+```bash
+cd CampusConnect
+dotnet user-secrets set "Jwt:Key" "<random string of at least 32 characters>"
+dotnet user-secrets set "SeedAdmin:Email" "admin@campusconnect.local"
+dotnet user-secrets set "SeedAdmin:Password" "<a strong password>"
+```
+
+The roles (Admin, Faculty, Student) and the first admin account are created automatically on startup.
 
 ```bash
 dotnet tool install --global dotnet-ef   # once
