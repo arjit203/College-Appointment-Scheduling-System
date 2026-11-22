@@ -1,0 +1,16 @@
+# Personal learning notes - kept in a separate PRIVATE GitHub repo (see learning/README.md)
+learning/
+
+# .NET build output
+bin/
+obj/
+
+# Visual Studio / VS Code / Rider
+.vs/
+*.user
+*.suo
+.idea/
+
+# OS files
+Thumbs.db
+.DS_Store
