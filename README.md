@@ -18,7 +18,8 @@ A web application where **students** book appointments with **faculty**, faculty
 - [x] Phase 5 – Faculty availability slots (local college time, overlap & ownership checks)
 - [x] Phase 6 – Appointment booking, status management and cancellation (transaction-safe, no double booking)
 - [x] Phase 7 – Admin dashboard statistics APIs
-- [ ] Next – Notifications, frontend, polish
+- [x] Phase 8 – Frontend setup: login, student registration, JWT session, role-based redirects
+- [ ] Next – Role dashboards, booking UI, notifications, polish
 
 ## Run locally
 
@@ -44,7 +45,7 @@ dotnet ef database update                # creates CampusConnectDb
 dotnet run --launch-profile http
 ```
 
-- App: http://localhost:5290/
+- App (login page): http://localhost:5290/
 - Swagger: http://localhost:5290/swagger
 
 ## Folder structure

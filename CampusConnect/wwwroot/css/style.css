@@ -1,0 +1,112 @@
+/* =====================================================================
+   CampusConnect - custom styles (Bootstrap 5 does most of the work)
+   ===================================================================== */
+
+:root {
+    --cc-primary: #1f3c88;        /* deep college blue */
+    --cc-primary-dark: #162b63;
+    --cc-accent: #f2a541;         /* warm accent for highlights */
+    --cc-bg: #f4f6fb;
+    --cc-text-muted: #6c757d;
+}
+
+body {
+    background-color: var(--cc-bg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Protected pages start hidden until dashboard.js has checked the login,
+   so a logged-out user never sees a flash of the page. */
+body.auth-pending main,
+body.auth-pending nav {
+    visibility: hidden;
+}
+
+/* ---------- Buttons in the brand colour ---------- */
+.btn-primary {
+    --bs-btn-bg: var(--cc-primary);
+    --bs-btn-border-color: var(--cc-primary);
+    --bs-btn-hover-bg: var(--cc-primary-dark);
+    --bs-btn-hover-border-color: var(--cc-primary-dark);
+    --bs-btn-active-bg: var(--cc-primary-dark);
+    --bs-btn-active-border-color: var(--cc-primary-dark);
+    --bs-btn-disabled-bg: var(--cc-primary);
+    --bs-btn-disabled-border-color: var(--cc-primary);
+}
+
+a {
+    color: var(--cc-primary);
+}
+
+/* ---------- Login / Register layout ---------- */
+.auth-wrapper {
+    min-height: 100vh;
+}
+
+.auth-brand {
+    background: linear-gradient(160deg, var(--cc-primary) 0%, var(--cc-primary-dark) 100%);
+    color: #fff;
+}
+
+.auth-brand .lead {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.auth-brand ul li {
+    margin-bottom: 0.6rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.6rem;
+    background-color: var(--cc-accent);
+    color: var(--cc-primary-dark);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.status-dot::before {
+    content: "\25CF";     /* a small filled circle */
+    margin-right: 0.35rem;
+}
+
+/* ---------- Dashboard pages ---------- */
+.navbar-cc {
+    background-color: var(--cc-primary);
+}
+
+.navbar-cc .navbar-brand {
+    font-weight: 600;
+}
+
+.page-header {
+    border-bottom: 1px solid #e3e7ef;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-card {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.coming-soon li {
+    padding: 0.35rem 0;
+    color: var(--cc-text-muted);
+}

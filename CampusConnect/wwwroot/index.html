@@ -3,27 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CampusConnect</title>
+    <title>Login – CampusConnect</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/site.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:,"> <!-- no favicon yet: stops the browser asking for /favicon.ico -->
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-primary px-3">
-        <a class="navbar-brand fw-semibold" href="index.html">CampusConnect</a>
-    </nav>
+    <div class="container-fluid">
+        <div class="row auth-wrapper">
 
-    <main class="container my-5">
-        <h1 class="mb-3">CampusConnect</h1>
-        <p class="lead">College Appointment Scheduling System</p>
-
-        <div class="card mt-4" style="max-width: 420px;">
-            <div class="card-body">
-                <h2 class="h5 card-title">API status</h2>
-                <p id="apiStatus" class="mb-0 text-muted">Checking...</p>
+            <!-- Left: branding (hidden on small screens) -->
+            <div class="col-lg-6 d-none d-lg-flex auth-brand align-items-center p-5">
+                <div class="mx-auto" style="max-width: 440px;">
+                    <span class="brand-mark mb-4">CC</span>
+                    <h1 class="display-6 fw-semibold mb-3">CampusConnect</h1>
+                    <p class="lead mb-4">College Appointment Scheduling System</p>
+                    <ul class="list-unstyled">
+                        <li>&#10003; Find faculty members and their free time slots</li>
+                        <li>&#10003; Book, track and cancel appointments online</li>
+                        <li>&#10003; Faculty approve requests in one place</li>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </main>
 
-    <script src="js/site.js"></script>
+            <!-- Right: login form -->
+            <div class="col-lg-6 d-flex align-items-center justify-content-center p-4">
+                <div class="card auth-card shadow-sm">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="d-lg-none text-center mb-3">
+                            <span class="brand-mark">CC</span>
+                            <div class="fw-semibold mt-2">CampusConnect</div>
+                        </div>
+
+                        <h2 class="h4 mb-1">Sign in</h2>
+                        <p class="text-muted mb-4">Use your college email and password.</p>
+
+                        <div id="alertBox" class="mb-3"></div>
+
+                        <!-- novalidate: we show Bootstrap's messages instead of the browser's pop-ups -->
+                        <form id="loginForm" novalidate>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" class="form-control" placeholder="name@college.edu"
+                                       autocomplete="username" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" id="password" class="form-control"
+                                       autocomplete="current-password" required>
+                                <div class="invalid-feedback">Please enter your password.</div>
+                            </div>
+
+                            <button type="submit" id="loginButton" class="btn btn-primary w-100 py-2">Sign in</button>
+                        </form>
+
+                        <p class="text-center mt-4 mb-0">
+                            New student? <a href="register.html">Create an account</a>
+                        </p>
+
+                        <hr class="my-4">
+                        <p class="small text-muted text-center mb-0">
+                            Faculty and admin accounts are created by the college administrator.
+                        </p>
+                        <p class="small text-center mt-2 mb-0">
+                            <span id="apiStatus" class="status-dot text-muted">Checking system...</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
