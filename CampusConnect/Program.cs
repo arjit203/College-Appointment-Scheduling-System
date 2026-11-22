@@ -1,3 +1,6 @@
+using CampusConnect.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------------------------------------------------------------
@@ -5,6 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 //    Everything the app needs is registered here, so ASP.NET Core
 //    can create it and give it to our classes (Dependency Injection).
 // ---------------------------------------------------------------
+
+// Reads "ConnectionStrings:DefaultConnection" from appsettings.json.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+
+// Registers our database context so it can be injected into services/controllers.
+// UseSqlServer = talk to Microsoft SQL Server using this connection string.
+// A new ApplicationDbContext is created for every HTTP request (Scoped lifetime).
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 // Enables API controllers (classes inside the Controllers folder).
 builder.Services.AddControllers();

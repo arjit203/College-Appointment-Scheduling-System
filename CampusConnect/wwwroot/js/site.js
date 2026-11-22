@@ -12,8 +12,13 @@ async function checkApiStatus() {
         }
 
         const data = await response.json(); // JSON text -> JavaScript object
-        statusText.textContent = data.application + " is " + data.status;
-        statusText.className = "mb-0 text-success";
+        if (data.databaseConnected) {
+            statusText.textContent = data.application + " is " + data.status + " – database connected";
+            statusText.className = "mb-0 text-success";
+        } else {
+            statusText.textContent = data.application + " is " + data.status + " – database NOT connected";
+            statusText.className = "mb-0 text-warning";
+        }
     } catch (error) {
         statusText.textContent = "Could not reach the API.";
         statusText.className = "mb-0 text-danger";
