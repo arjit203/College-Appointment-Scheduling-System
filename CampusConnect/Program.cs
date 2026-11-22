@@ -133,6 +133,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     await DbSeeder.SeedRolesAndAdminAsync(scope.ServiceProvider);
+    await DbSeeder.SeedAppointmentTypesAsync(scope.ServiceProvider);
 }
 
 // ---------------------------------------------------------------

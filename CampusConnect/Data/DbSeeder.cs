@@ -1,5 +1,6 @@
 using CampusConnect.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampusConnect.Data;
 
@@ -7,6 +8,26 @@ namespace CampusConnect.Data;
 // It only ADDS what is missing, so running it again changes nothing.
 public static class DbSeeder
 {
+    // Adds the default appointment types the first time the app runs.
+    // If the table already has rows, nothing happens.
+    public static async Task SeedAppointmentTypesAsync(IServiceProvider services)
+    {
+        var context = services.GetRequiredService<ApplicationDbContext>();
+
+        if (await context.AppointmentTypes.AnyAsync())
+        {
+            return;
+        }
+
+        context.AppointmentTypes.AddRange(
+            new AppointmentType { Name = "Academic Advising", Description = "Course selection and academic progress", DurationInMinutes = 15 },
+            new AppointmentType { Name = "Project Guidance", Description = "Help with projects and assignments", DurationInMinutes = 30 },
+            new AppointmentType { Name = "Doubt Clearing", Description = "Questions about lectures or topics", DurationInMinutes = 15 },
+            new AppointmentType { Name = "Career Counselling", Description = "Internships, higher studies and careers", DurationInMinutes = 30 });
+
+        await context.SaveChangesAsync();
+    }
+
     public static async Task SeedRolesAndAdminAsync(IServiceProvider services)
     {
         var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
