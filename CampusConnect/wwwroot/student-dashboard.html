@@ -21,48 +21,127 @@
         </div>
     </nav>
 
-    <main class="container my-4">
-        <div class="page-header">
-            <h1 class="h3 mb-1">Welcome, <span id="welcomeName"></span></h1>
-            <p class="text-muted mb-0">Student dashboard</p>
-        </div>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3 col-lg-2 sidebar p-3">
+                <nav class="nav nav-pills flex-row flex-md-column gap-1">
+                    <a class="nav-link" href="#find-faculty" data-section="find-faculty">Find faculty</a>
+                    <a class="nav-link" href="#my-appointments" data-section="my-appointments">My appointments</a>
+                </nav>
+            </aside>
 
-        <div id="pageAlert" class="mb-3"></div>
+            <main class="col-md-9 col-lg-10 p-4">
+                <div id="pageAlert" class="mb-3"></div>
 
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div id="profileBox" class="card info-card shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h2 class="h5 mb-0">My account</h2>
-                            <span id="profileStatus" class="badge text-bg-secondary">Checking...</span>
+                <!-- ============================ FIND FACULTY ============================ -->
+                <section id="section-find-faculty" class="page-section d-none">
+                    <div class="page-header">
+                        <h1 class="h3 mb-1">Welcome, <span id="welcomeName"></span></h1>
+                        <p class="text-muted mb-0">Find a faculty member and book a meeting</p>
+                    </div>
+
+                    <div class="card info-card shadow-sm mb-3">
+                        <div class="card-body">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-6">
+                                    <label for="facultySearch" class="form-label">Search by name</label>
+                                    <input id="facultySearch" type="search" class="form-control" placeholder="e.g. Mehta">
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="departmentFilter" class="form-label">Department</label>
+                                    <select id="departmentFilter" class="form-select">
+                                        <option value="">All departments</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 small text-muted" id="facultyCount"></div>
+                            </div>
                         </div>
-                        <dl class="row mb-0">
-                            <dt class="col-4">Name</dt><dd class="col-8" id="profileName">–</dd>
-                            <dt class="col-4">Email</dt><dd class="col-8" id="profileEmail">–</dd>
-                            <dt class="col-4">Role</dt><dd class="col-8" id="profileRoles">–</dd>
-                        </dl>
                     </div>
-                </div>
-            </div>
 
-            <div class="col-md-6">
-                <div class="card info-card shadow-sm h-100">
-                    <div class="card-body">
-                        <h2 class="h5 mb-3">Coming soon</h2>
-                        <ul class="list-unstyled coming-soon mb-0">
-                            <li>Browse faculty members</li>
-                            <li>View available time slots</li>
-                            <li>Book appointments</li>
-                            <li>View and cancel my appointments</li>
-                        </ul>
+                    <div class="card info-card shadow-sm">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>Name</th><th>Department</th><th>Designation</th><th>Office</th><th></th></tr></thead>
+                                    <tbody id="facultyTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </section>
+
+                <!-- ============================ MY APPOINTMENTS ============================ -->
+                <section id="section-my-appointments" class="page-section d-none">
+                    <div class="page-header">
+                        <h1 class="h3 mb-1">My appointments</h1>
+                        <p class="text-muted mb-0">Your booking history. Pending and approved appointments can be cancelled.</p>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-lg-3"><div class="card stat-card"><div class="card-body"><div class="stat-label">Total</div><div class="stat-value" id="myStatTotal">–</div></div></div></div>
+                        <div class="col-6 col-lg-3"><div class="card stat-card stat-pending"><div class="card-body"><div class="stat-label">Pending</div><div class="stat-value" id="myStatPending">–</div></div></div></div>
+                        <div class="col-6 col-lg-3"><div class="card stat-card stat-approved"><div class="card-body"><div class="stat-label">Approved</div><div class="stat-value" id="myStatApproved">–</div></div></div></div>
+                        <div class="col-6 col-lg-3"><div class="card stat-card stat-completed"><div class="card-body"><div class="stat-label">Completed</div><div class="stat-value" id="myStatCompleted">–</div></div></div></div>
+                    </div>
+
+                    <div class="card info-card shadow-sm">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>When</th><th>Faculty</th><th>Type</th><th>Reason</th><th>Status</th><th class="text-end"></th></tr></thead>
+                                    <tbody id="myAppointmentsBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-    </main>
+    </div>
 
+    <!-- ============================ BOOKING DIALOG ============================ -->
+    <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <form id="bookingForm" class="modal-content" novalidate>
+                <div class="modal-header">
+                    <div>
+                        <h2 class="modal-title h5" id="bookingTitle">Book with <span id="bookingFacultyName"></span></h2>
+                        <div class="small text-muted" id="bookingFacultyInfo"></div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="bookingAlert" class="mb-3"></div>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6">1. Choose a free time slot</legend>
+                        <div id="slotList" class="d-flex flex-wrap gap-2"></div>
+                    </fieldset>
+
+                    <div class="mb-3">
+                        <label for="bookingType" class="form-label">2. Appointment type</label>
+                        <select id="bookingType" class="form-select" required></select>
+                        <div class="invalid-feedback">Please choose an appointment type.</div>
+                    </div>
+
+                    <div>
+                        <label for="bookingReason" class="form-label">3. Reason for the meeting</label>
+                        <textarea id="bookingReason" class="form-control" rows="3" required minlength="5" maxlength="500"
+                                  placeholder="e.g. I need guidance on my final year project topic"></textarea>
+                        <div class="invalid-feedback">Please describe the reason (5–500 characters).</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" id="bookButton" class="btn btn-primary">Confirm booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/student.js"></script>
 </body>
 </html>

@@ -247,3 +247,195 @@ function setButtonLoading(button, isLoading, loadingText) {
         button.textContent = button.dataset.originalText || button.textContent;
     }
 }
+
+// ---------------------------------------------------------------------
+// 4. Dates and times
+// The API uses LOCAL COLLEGE TIME without a time zone, e.g. "2026-12-01T10:00:00".
+// new Date("2026-12-01T10:00:00") reads that as local time in the browser.
+// ---------------------------------------------------------------------
+
+function formatDate(value) {
+    return new Date(value).toLocaleDateString("en-IN", { weekday: "short", day: "2-digit", month: "short", year: "numeric" });
+}
+
+function formatTime(value) {
+    return new Date(value).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+}
+
+function formatDateTime(value) {
+    return formatDate(value) + ", " + formatTime(value);
+}
+
+// Builds the value the API expects from a date box ("2026-12-01") and a time box ("10:00").
+function toApiDateTime(dateValue, timeValue) {
+    return dateValue + "T" + timeValue + ":00";
+}
+
+// Today's date as "YYYY-MM-DD" (local), used as the minimum for date boxes.
+function todayForDateInput() {
+    const now = new Date();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    return now.getFullYear() + "-" + month + "-" + day;
+}
+
+// ---------------------------------------------------------------------
+// 5. Building tables and badges (always with textContent - never innerHTML)
+// ---------------------------------------------------------------------
+
+// One colour per appointment status, used on every page.
+const STATUS_STYLES = {
+    Pending: "text-bg-warning",
+    Approved: "text-bg-primary",
+    Rejected: "text-bg-danger",
+    Completed: "text-bg-success",
+    Cancelled: "text-bg-secondary"
+};
+
+function createStatusBadge(status) {
+    const badge = document.createElement("span");
+    badge.className = "badge " + (STATUS_STYLES[status] || "text-bg-light");
+    badge.textContent = status;
+    return badge;
+}
+
+// A table cell. "content" can be text, a number, an element, or a list of those.
+function createCell(content, className) {
+    const cell = document.createElement("td");
+    if (className) {
+        cell.className = className;
+    }
+    const items = Array.isArray(content) ? content : [content];
+    for (const item of items) {
+        if (item instanceof Node) {
+            cell.appendChild(item);
+        } else if (item !== null && item !== undefined) {
+            cell.appendChild(document.createTextNode(String(item)));
+        }
+    }
+    return cell;
+}
+
+function createRow(cells) {
+    const row = document.createElement("tr");
+    for (const cell of cells) {
+        row.appendChild(cell);
+    }
+    return row;
+}
+
+// Fills a table body with a single message row ("Loading...", "No records", an error).
+function showTableMessage(tableBody, columnCount, message) {
+    const cell = document.createElement("td");
+    cell.colSpan = columnCount;
+    cell.className = "text-center text-muted py-4";
+    cell.textContent = message;
+    tableBody.replaceChildren(createRow([cell]));
+}
+
+function createButton(text, className, onClick) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn btn-sm " + className;
+    button.textContent = text;
+    button.addEventListener("click", onClick);
+    return button;
+}
+
+// Small grey second line inside a cell, e.g. a student's email under their name.
+function createSmallText(text) {
+    const small = document.createElement("div");
+    small.className = "small text-muted";
+    small.textContent = text;
+    return small;
+}
+
+// ---------------------------------------------------------------------
+// 6. Confirmation dialog (Bootstrap modal) for delete / cancel / reject
+// Usage:  if (await confirmAction("Delete department", "Are you sure?", "Delete")) { ... }
+// ---------------------------------------------------------------------
+function confirmAction(title, message, confirmText = "Confirm", buttonClass = "btn-danger") {
+    return new Promise((resolve) => {
+        let modalElement = document.getElementById("confirmModal");
+
+        // Create the dialog once and reuse it.
+        if (!modalElement) {
+            modalElement = document.createElement("div");
+            modalElement.id = "confirmModal";
+            modalElement.className = "modal fade";
+            modalElement.tabIndex = -1;
+            modalElement.innerHTML = `
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title h5" id="confirmTitle"></h2>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" id="confirmMessage"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Go back</button>
+                            <button type="button" class="btn" id="confirmButton"></button>
+                        </div>
+                    </div>
+                </div>`;   // fixed markup only - the changing text is set with textContent below
+            document.body.appendChild(modalElement);
+        }
+
+        modalElement.querySelector("#confirmTitle").textContent = title;
+        modalElement.querySelector("#confirmMessage").textContent = message;
+        const confirmButton = modalElement.querySelector("#confirmButton");
+        confirmButton.textContent = confirmText;
+        confirmButton.className = "btn " + buttonClass;
+
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        let isOpen = false;     // has the opening animation finished?
+        let answered = false;
+
+        // Give the answer exactly once.
+        const finish = (result) => {
+            if (answered) return;
+            answered = true;
+            confirmButton.removeEventListener("click", onConfirm);
+            modalElement.removeEventListener("hidden.bs.modal", onHidden);
+            resolve(result);
+        };
+
+        // Clicked "Confirm": answer straight away, then close.
+        // (Bootstrap ignores hide() while the dialog is still opening, so if the
+        //  click was very quick we close it as soon as it has finished opening.)
+        const onConfirm = () => {
+            finish(true);
+            if (isOpen) modal.hide();
+        };
+        const onShown = () => {
+            isOpen = true;
+            if (answered) modal.hide();
+        };
+        // Closed any other way (Go back, X, Esc, clicking outside) = "no".
+        const onHidden = () => finish(false);
+
+        confirmButton.addEventListener("click", onConfirm);
+        modalElement.addEventListener("shown.bs.modal", onShown, { once: true });
+        modalElement.addEventListener("hidden.bs.modal", onHidden);
+        modal.show();
+    });
+}
+
+// When any Bootstrap dialog starts closing, move keyboard focus off it.
+// Without this, the browser warns that a hidden dialog still holds focus,
+// which confuses screen readers (an accessibility issue).
+document.addEventListener("hide.bs.modal", () => {
+    if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+    }
+});
+
+// Closes a Bootstrap dialog. If it is still opening (e.g. a very quick click),
+// Bootstrap ignores hide(), so we close it again as soon as it has fully opened.
+function closeModal(modalElement) {
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modal.hide();
+    if (modalElement.classList.contains("show")) {
+        modalElement.addEventListener("shown.bs.modal", () => modal.hide(), { once: true });
+    }
+}

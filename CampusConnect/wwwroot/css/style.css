@@ -106,7 +106,80 @@ a {
     border-radius: 0.75rem;
 }
 
-.coming-soon li {
-    padding: 0.35rem 0;
+/* ---------- Sidebar ---------- */
+.sidebar {
+    background-color: #fff;
+    border-bottom: 1px solid #e3e7ef;
+}
+
+@media (min-width: 768px) {
+    .sidebar {
+        border-bottom: none;
+        border-right: 1px solid #e3e7ef;
+        min-height: calc(100vh - 56px);   /* full height below the navbar */
+    }
+}
+
+.sidebar .nav-link {
+    color: #344054;
+    border-radius: 0.5rem;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #eef2fa;
+}
+
+.sidebar .nav-link.active {
+    background-color: var(--cc-primary);
+    color: #fff;
+}
+
+/* ---------- Statistic cards ---------- */
+.stat-card {
+    border: none;
+    border-radius: 0.75rem;
+    border-left: 4px solid var(--cc-primary);
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.stat-card.stat-pending   { border-left-color: #ffc107; }
+.stat-card.stat-approved  { border-left-color: #0d6efd; }
+.stat-card.stat-rejected  { border-left-color: #dc3545; }
+.stat-card.stat-completed { border-left-color: #198754; }
+.stat-card.stat-cancelled { border-left-color: #6c757d; }
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: var(--cc-text-muted);
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+/* ---------- Tables ---------- */
+.table th {
+    font-size: 0.85rem;
+    color: var(--cc-text-muted);
+    font-weight: 600;
+}
+
+/* Long reasons wrap instead of stretching the table */
+.reason-cell {
+    max-width: 260px;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* ---------- Booking: slot choices ---------- */
+.slot-option {
+    min-width: 9.5rem;
+    text-align: left;
+}
+
+.btn-check:checked + .slot-option .text-muted {
+    color: rgba(255, 255, 255, 0.85) !important;
 }

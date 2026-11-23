@@ -20,48 +20,168 @@
         </div>
     </nav>
 
-    <main class="container my-4">
-        <div class="page-header">
-            <h1 class="h3 mb-1">Welcome, <span id="welcomeName"></span></h1>
-            <p class="text-muted mb-0">Faculty dashboard</p>
-        </div>
+    <div class="container-fluid">
+        <div class="row">
+            <aside class="col-md-3 col-lg-2 sidebar p-3">
+                <nav class="nav nav-pills flex-row flex-md-column gap-1">
+                    <a class="nav-link" href="#overview" data-section="overview">Overview</a>
+                    <a class="nav-link" href="#availability" data-section="availability">My availability</a>
+                    <a class="nav-link" href="#appointments" data-section="appointments">Appointments</a>
+                </nav>
+            </aside>
 
-        <div id="pageAlert" class="mb-3"></div>
+            <main class="col-md-9 col-lg-10 p-4">
+                <div id="pageAlert" class="mb-3"></div>
 
-        <div class="row g-4">
-            <div class="col-md-6">
-                <div id="profileBox" class="card info-card shadow-sm h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h2 class="h5 mb-0">My account</h2>
-                            <span id="profileStatus" class="badge text-bg-secondary">Checking...</span>
+                <!-- ============================ OVERVIEW ============================ -->
+                <section id="section-overview" class="page-section d-none">
+                    <div class="page-header">
+                        <h1 class="h3 mb-1">Welcome, <span id="welcomeName"></span></h1>
+                        <p class="text-muted mb-0">Your appointments at a glance</p>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-lg-3"><div class="card stat-card"><div class="card-body"><div class="stat-label">Total</div><div class="stat-value" id="statTotal">–</div></div></div></div>
+                        <div class="col-6 col-lg-3"><div class="card stat-card stat-pending"><div class="card-body"><div class="stat-label">Pending</div><div class="stat-value" id="statPending">–</div></div></div></div>
+                        <div class="col-6 col-lg-3"><div class="card stat-card stat-approved"><div class="card-body"><div class="stat-label">Approved</div><div class="stat-value" id="statApproved">–</div></div></div></div>
+                        <div class="col-6 col-lg-3"><div class="card stat-card stat-completed"><div class="card-body"><div class="stat-label">Completed</div><div class="stat-value" id="statCompleted">–</div></div></div></div>
+                    </div>
+
+                    <div class="card info-card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="h5 mb-0">Upcoming approved meetings</h2>
+                                <button id="goToRequestsButton" class="btn btn-sm btn-outline-primary">Review pending requests</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead><tr><th>When</th><th>Student</th><th>Type</th></tr></thead>
+                                    <tbody id="upcomingTableBody"></tbody>
+                                </table>
+                            </div>
                         </div>
-                        <dl class="row mb-0">
-                            <dt class="col-4">Name</dt><dd class="col-8" id="profileName">–</dd>
-                            <dt class="col-4">Email</dt><dd class="col-8" id="profileEmail">–</dd>
-                            <dt class="col-4">Role</dt><dd class="col-8" id="profileRoles">–</dd>
-                        </dl>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <div class="col-md-6">
-                <div class="card info-card shadow-sm h-100">
-                    <div class="card-body">
-                        <h2 class="h5 mb-3">Coming soon</h2>
-                        <ul class="list-unstyled coming-soon mb-0">
-                            <li>Manage my availability slots</li>
-                            <li>View appointment requests</li>
-                            <li>Approve or reject requests</li>
-                            <li>Mark appointments as completed</li>
-                        </ul>
+                <!-- ============================ AVAILABILITY ============================ -->
+                <section id="section-availability" class="page-section d-none">
+                    <div class="page-header">
+                        <h1 class="h3 mb-1">My availability</h1>
+                        <p class="text-muted mb-0">Times when students can book you (local college time)</p>
                     </div>
-                </div>
-            </div>
+
+                    <div class="card info-card shadow-sm mb-4">
+                        <div class="card-body">
+                            <h2 class="h5 mb-3">Add a time slot</h2>
+                            <form id="addSlotForm" class="row g-3" novalidate>
+                                <div class="col-md-4">
+                                    <label for="slotDate" class="form-label">Date</label>
+                                    <input id="slotDate" type="date" class="form-control" required>
+                                    <div class="invalid-feedback">Please choose today or a later date.</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label for="slotStart" class="form-label">Start time</label>
+                                    <input id="slotStart" type="time" class="form-control" required>
+                                    <div class="invalid-feedback">Required.</div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label for="slotEnd" class="form-label">End time</label>
+                                    <input id="slotEnd" type="time" class="form-control" required>
+                                    <div class="invalid-feedback">Required.</div>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button id="addSlotButton" type="submit" class="btn btn-primary w-100">Add slot</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card info-card shadow-sm">
+                        <div class="card-body">
+                            <p class="small text-muted">Booked and past slots are locked. To free a booked slot, reject the appointment.</p>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>Date</th><th>Time</th><th>Length</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                                    <tbody id="slotTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================ APPOINTMENTS ============================ -->
+                <section id="section-appointments" class="page-section d-none">
+                    <div class="page-header d-flex flex-wrap justify-content-between align-items-end gap-2">
+                        <div>
+                            <h1 class="h3 mb-1">Appointment requests</h1>
+                            <p class="text-muted mb-0">Approve, reject or complete student appointments</p>
+                        </div>
+                        <div>
+                            <label for="statusFilter" class="form-label small mb-1">Show</label>
+                            <select id="statusFilter" class="form-select form-select-sm">
+                                <option value="">All statuses</option>
+                                <option>Pending</option>
+                                <option>Approved</option>
+                                <option>Completed</option>
+                                <option>Rejected</option>
+                                <option>Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="card info-card shadow-sm">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>When</th><th>Student</th><th>Type</th><th>Reason</th><th>Status</th><th class="text-end">Actions</th></tr></thead>
+                                    <tbody id="appointmentTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-    </main>
+    </div>
 
+    <!-- ============================ EDIT SLOT DIALOG ============================ -->
+    <div class="modal fade" id="editSlotModal" tabindex="-1" aria-labelledby="editSlotTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="editSlotForm" class="modal-content" novalidate>
+                <div class="modal-header">
+                    <h2 class="modal-title h5" id="editSlotTitle">Edit time slot</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="editSlotAlert" class="mb-3"></div>
+                    <input type="hidden" id="editSlotId">
+                    <div class="mb-3">
+                        <label for="editSlotDate" class="form-label">Date</label>
+                        <input id="editSlotDate" type="date" class="form-control" required>
+                        <div class="invalid-feedback">Please choose today or a later date.</div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="editSlotStart" class="form-label">Start time</label>
+                            <input id="editSlotStart" type="time" class="form-control" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="editSlotEnd" class="form-label">End time</label>
+                            <input id="editSlotEnd" type="time" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" id="saveSlotButton" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/faculty.js"></script>
 </body>
 </html>

@@ -1,7 +1,10 @@
 // =====================================================================
-// dashboard.js - shared code for every page that needs a logged-in user:
+// dashboard.js - shared "shell" for the role pages:
 //   dashboard.html, admin-dashboard.html, faculty-dashboard.html, student-dashboard.html
-// Needs api.js to be loaded first.
+// Needs api.js to be loaded first. The page's own script (admin.js, faculty.js
+// or student.js) is loaded after this one and provides:
+//   initRolePage(user)      - runs once, sets up forms and buttons
+//   onSectionShown(name)    - runs each time a sidebar section is opened (loads its data)
 //
 // Each page says which role it is for in its <body> tag, e.g.
 //   <body data-required-role="Student">
@@ -27,7 +30,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Everything checked - show the page (it is hidden until now, see style.css).
     document.body.classList.remove("auth-pending");
 
-    loadProfileFromServer();
+    if (typeof initRolePage === "function") {
+        initRolePage(user);
+    }
+
+    setUpSidebar();
 });
 
 // Page guard. Returns the user, or null if we had to redirect.
@@ -62,31 +69,58 @@ function requireLogin(requiredRole) {
 function showUserInNavbar(user) {
     document.getElementById("navUserName").textContent = user.fullName;
     document.getElementById("navUserRole").textContent = getPrimaryRole(user);
-    // Full name (taking only the first word would show "Welcome, Dr." for faculty).
-    document.getElementById("welcomeName").textContent = user.fullName;
+    const welcome = document.getElementById("welcomeName");
+    if (welcome) {
+        welcome.textContent = user.fullName;
+    }
 }
 
-// Calls a PROTECTED API (GET /api/auth/me) with the JWT.
-// This proves the token works and shows the details the SERVER has for us.
-async function loadProfileFromServer() {
-    const box = document.getElementById("profileBox");
-    if (!box) {
-        return;
+// ---------------------------------------------------------------------
+// Sidebar: each link has data-section="name" and shows <section id="section-name">.
+// The open section is remembered in the address bar (#name) so a refresh keeps it.
+// ---------------------------------------------------------------------
+function setUpSidebar() {
+    const links = document.querySelectorAll("[data-section]");
+
+    for (const link of links) {
+        link.addEventListener("click", (event) => {
+            event.preventDefault();
+            showSection(link.dataset.section);
+        });
     }
 
-    try {
-        const profile = await apiGet("/api/auth/me");   // { id, fullName, email, roles }
+    const fromAddressBar = window.location.hash.replace("#", "");
+    const exists = document.getElementById("section-" + fromAddressBar);
+    showSection(exists ? fromAddressBar : links[0].dataset.section);
+}
 
-        document.getElementById("profileName").textContent = profile.fullName;
-        document.getElementById("profileEmail").textContent = profile.email;
-        document.getElementById("profileRoles").textContent = profile.roles.join(", ");
-        document.getElementById("profileStatus").textContent = "Verified by server";
-        document.getElementById("profileStatus").className = "badge text-bg-success";
-    } catch (error) {
-        document.getElementById("profileStatus").textContent = "Could not verify";
-        document.getElementById("profileStatus").className = "badge text-bg-danger";
-        showAlert(document.getElementById("pageAlert"), "danger", error.messages || ["Could not load your profile."]);
+function showSection(name) {
+    for (const section of document.querySelectorAll(".page-section")) {
+        section.classList.toggle("d-none", section.id !== "section-" + name);
     }
+    for (const link of document.querySelectorAll("[data-section]")) {
+        const isActive = link.dataset.section === name;
+        link.classList.toggle("active", isActive);
+        if (isActive) {
+            link.setAttribute("aria-current", "page");
+        } else {
+            link.removeAttribute("aria-current");
+        }
+    }
+
+    history.replaceState(null, "", "#" + name);
+    clearAlert(document.getElementById("pageAlert"));
+
+    if (typeof onSectionShown === "function") {
+        onSectionShown(name);
+    }
+}
+
+// Shows a message at the top of the page and scrolls to it.
+function showPageMessage(type, messages) {
+    const box = document.getElementById("pageAlert");
+    showAlert(box, type, messages);
+    box.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 // Logging out with JWT = forgetting the token in the browser.
