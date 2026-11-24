@@ -126,6 +126,15 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
+// ---------------------------------------------------------------
+// 2. STARTUP TASKS
+//    Create the roles (and first admin) if they don't exist yet.
+// ---------------------------------------------------------------
+using (var scope = app.Services.CreateScope())
+{
+    await DbSeeder.SeedRolesAndAdminAsync(scope.ServiceProvider);
+    await DbSeeder.SeedAppointmentTypesAsync(scope.ServiceProvider);
+}
 
 if (!app.Environment.IsDevelopment())
 {
