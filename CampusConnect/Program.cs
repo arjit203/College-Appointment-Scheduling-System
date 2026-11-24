@@ -136,38 +136,27 @@ using (var scope = app.Services.CreateScope())
     await DbSeeder.SeedAppointmentTypesAsync(scope.ServiceProvider);
 }
 
+// ---------------------------------------------------------------
+// 3. MIDDLEWARE PIPELINE
+//    Every request passes through these steps, in this order.
+// ---------------------------------------------------------------
+
 if (!app.Environment.IsDevelopment())
 {
     // In production, hide error details from users.
     app.UseExceptionHandler();
 }
 
-// Enable OpenAPI and Swagger in both Development and Production.
+// Swagger is enabled in BOTH Development and Production.
+// Publishes the OpenAPI document at /openapi/v1.json
 app.MapOpenApi();
 
+// The Swagger test page at /swagger
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/openapi/v1.json", "CampusConnect API v1");
-    options.EnablePersistAuthorization();
+    options.EnablePersistAuthorization();   // remember the token after a page refresh
 });
-
-if (app.Environment.IsDevelopment())
-{
-    // Publishes the OpenAPI document at /openapi/v1.json
-    app.MapOpenApi();
-
-    // The Swagger test page at /swagger
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "CampusConnect API v1");
-        options.EnablePersistAuthorization();   // remember the token after a page refresh
-    });
-}
-else
-{
-    // In production, hide error details from users.
-    app.UseExceptionHandler();
-}
 
 // Redirects http:// requests to https://
 app.UseHttpsRedirection();
