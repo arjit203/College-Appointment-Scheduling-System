@@ -126,20 +126,21 @@ builder.Services.AddOpenApi(options =>
 
 var app = builder.Build();
 
-// ---------------------------------------------------------------
-// 2. STARTUP TASKS
-//    Create the roles (and first admin) if they don't exist yet.
-// ---------------------------------------------------------------
-using (var scope = app.Services.CreateScope())
+
+if (!app.Environment.IsDevelopment())
 {
-    await DbSeeder.SeedRolesAndAdminAsync(scope.ServiceProvider);
-    await DbSeeder.SeedAppointmentTypesAsync(scope.ServiceProvider);
+    // In production, hide error details from users.
+    app.UseExceptionHandler();
 }
 
-// ---------------------------------------------------------------
-// 3. MIDDLEWARE PIPELINE
-//    Every request passes through these steps, in this order.
-// ---------------------------------------------------------------
+// Enable OpenAPI and Swagger in both Development and Production.
+app.MapOpenApi();
+
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "CampusConnect API v1");
+    options.EnablePersistAuthorization();
+});
 
 if (app.Environment.IsDevelopment())
 {
